@@ -42,8 +42,8 @@ jobs:
       #     sudo apt-get install -y google-chrome-stable
 
       # # Run the build (skipping tests).
-      # - name: Build
-      #   run: ./gradlew build -x test
+      - name: Build
+        run: ./gradlew build -x test
 
       # # Run the tests.
       # - name: Run tests
