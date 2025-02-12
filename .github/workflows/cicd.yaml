@@ -1,0 +1,74 @@
+name: CI
+on:
+  push:
+    branches:
+      - feature/cicd
+  pull_request:
+
+jobs:
+  build-and-test:
+    # Run the job in the same container image as in CircleCI.
+    runs-on: ubuntu-latest
+    container:
+      image: cimg/openjdk:17.0-browsers
+    env:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    steps:
+      # Check out the repository.
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # # Restore the Gradle wrapper cache.
+      # - name: Cache Gradle Wrapper
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.gradle/wrapper
+      #     key: v1-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      # # Restore the Gradle caches.
+      # - name: Cache Gradle Caches
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.gradle/caches
+      #     key: v1-gradle-cache-${{ hashFiles('build.gradle') }}
+
+      # # Install Chrome.
+      # # (This mimics the CircleCI orb’s browser-tools/install-chrome command.
+      # # Depending on your container, Chrome might already be installed.)
+      # - name: Install Chrome
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y google-chrome-stable
+
+      # # Run the build (skipping tests).
+      # - name: Build
+      #   run: ./gradlew build -x test
+
+      # # Run the tests.
+      # - name: Run tests
+      #   run: ./gradlew test -i
+
+      # # Collect test results.
+      # # The "if: always()" ensures this step runs even if previous steps failed.
+      # - name: Save test results
+      #   if: always()
+      #   run: |
+      #     mkdir -p $HOME/test-results/junit/
+      #     find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $HOME/test-results/junit/ \;
+
+      # # Upload test results as an artifact.
+      # - name: Upload test results
+      #   if: always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: junit-test-results
+      #     path: $HOME/test-results/junit/
+
+      # # (Optional) Upload the build directory as an artifact,
+      # # similar to CircleCI’s persist_to_workspace.
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: build
+      #     path: build
